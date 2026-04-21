@@ -14,34 +14,34 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^5.4.0",
-    "@rainbow-me/rainbowkit": "^2.2.9",
-    "@tanstack/react-query": "^5.90.7",
-    "@vercel/blob": "^2.0.0",
+    "@openzeppelin/contracts": "^5.6.1",
+    "@rainbow-me/rainbowkit": "^2.2.10",
+    "@tanstack/react-query": "^5.99.2",
+    "@vercel/blob": "^2.3.3",
     "@web3modal/ethereum": "^2.7.1",
     "@web3modal/wagmi": "^5.1.11",
-    "framer-motion": "^12.23.24",
-    "jsonwebtoken": "^9.0.2",
-    "mongodb": "^6.20.0",
-    "next": "16.0.1",
-    "nodemailer": "^7.0.10",
-    "pinata": "^2.5.1",
-    "react": "19.2.0",
-    "react-dom": "19.2.0",
-    "react-icons": "^5.5.0",
-    "viem": "2.x",
-    "wagmi": "^2.19.2"
+    "framer-motion": "^12.38.0",
+    "jsonwebtoken": "^9.0.3",
+    "mongodb": "^6.21.0",
+    "next": "^16.2.4",
+    "nodemailer": "^7.0.13",
+    "pinata": "^2.5.5",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "react-icons": "^5.6.0",
+    "viem": "^2.48.2",
+    "wagmi": "^2.19.5"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
+    "@tailwindcss/postcss": "^4.2.3",
     "babel-plugin-react-compiler": "1.0.0",
-    "eslint": "^9",
-    "eslint-config-next": "16.0.1",
-    "tailwindcss": "^4"
+    "eslint": "^10.2.1",
+    "eslint-config-next": "^16.2.4",
+    "tailwindcss": "^4.2.3"
   }
 }
