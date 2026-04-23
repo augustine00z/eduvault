@@ -60,6 +60,29 @@ pnpm install --frozen-lockfile
 - Request/response examples are included when backend or API changes materially benefit from them.
 - Any product or architectural assumptions are stated explicitly in the PR description.
 
+## CI and Validation
+
+- **Canonical package manager**: `pnpm` (repo lockfile: `pnpm-lock.yaml`).
+- **Deterministic install (local + CI)**:
+
+```bash
+corepack enable && corepack prepare pnpm@latest --activate
+pnpm install --frozen-lockfile
+```
+
+- **Required validation commands** (run locally to replicate CI):
+
+```bash
+pnpm run lint          # lint checks
+pnpm run typecheck     # TypeScript type checks
+pnpm run test:frontend # Frontend tests (must exist, CI will fail if absent)
+pnpm run test:backend  # Backend tests
+pnpm run test:contracts# Contract tests (Hardhat/Foundry)
+pnpm run build         # build step
+```
+
+- The CI workflows are configured to run these commands with `pnpm` and use the locked dependency graph. Pull requests that remove or replace these scripts will fail CI. If a test runner is intentionally not used yet, update `CONTRIBUTING.md` and open an issue explaining why.
+
 ## Commit Messages
 
 Use concise, conventional commit messages when possible:
