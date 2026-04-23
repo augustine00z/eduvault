@@ -23,6 +23,7 @@ export function useWallet() {
   });
 
   const [hasAttemptedReconnect, setHasAttemptedReconnect] = useState(false);
+  const [previousAddress, setPreviousAddress] = useState(null);
 
   // Auto-reconnect on mount if previously connected
   useEffect(() => {
@@ -30,6 +31,27 @@ export function useWallet() {
       setHasAttemptedReconnect(true);
     }
   }, [isConnected, hasAttemptedReconnect, isReconnecting]);
+
+  // Watch for account changes (switch or disconnect) and ensure server session is cleared
+  useEffect(() => {
+    // Initialize previousAddress on first run
+    if (previousAddress === null) {
+      setPreviousAddress(address);
+      return;
+    }
+
+    // If address changed (including to null), clear server-side auth so previous session cannot persist
+    if (address !== previousAddress) {
+      (async () => {
+        try {
+          await fetch('/api/logout', { method: 'POST', credentials: 'include' });
+        } catch (e) {
+          console.warn('Logout on account change failed:', e?.message || e);
+        }
+      })();
+      setPreviousAddress(address);
+    }
+  }, [address, previousAddress]);
 
   /**
    * Connect to a specific wallet connector
@@ -49,6 +71,12 @@ export function useWallet() {
    */
   const disconnectWallet = async () => {
     try {
+      // Call backend logout to clear auth cookie so disconnect cannot leave session active
+      try {
+        await fetch('/api/logout', { method: 'POST', credentials: 'include' });
+      } catch (e) {
+        console.warn('Logout request failed:', e?.message || e);
+      }
       await disconnect();
     } catch (err) {
       console.error('Error disconnecting wallet:', err);
