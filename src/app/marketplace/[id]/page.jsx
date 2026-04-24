@@ -2,40 +2,93 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
-import { FaHeart, FaCheckCircle } from "react-icons/fa";
+import { useState, useEffect } from "react";
+import { FaHeart, FaCheckCircle, FaExclamationCircle } from "react-icons/fa";
 import { motion } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import BuyNowModal from "./modals/BuyNowModal";
+import { useParams } from "next/navigation";
 
+/**
+ * MaterialDetailsPage
+ * Renders the specific material details fetched by its stable identifier (_id).
+ * Replaces hardcoded demo data with real material record from the data layer.
+ */
 export default function MaterialDetailsPage() {
+	const { id } = useParams();
+	const [material, setMaterial] = useState(null);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState(null);
 	const [showBuyModal, setShowBuyModal] = useState(false);
 
-	const material = {
-		title: "ECO 201 – Principles of Microeconomics (Complete Lecture Notes)",
-		description:
-			"A detailed 60-page lecture note covering demand, supply, market equilibrium, elasticity, and production theory — essential for first and second-year students preparing for exams.",
-		price: "0.25 CELO",
-		likes: "18.6K",
-		reviews: "76 Reviews",
-		image: "/images/image2.jpg",
-		author: {
-			name: "Christian Okafor",
-			institution: "University of Nigeria, Nsukka (UNN)",
-			department: "Economics",
-			level: "200 Level",
-			date: "October 25, 2025",
-			verified: true,
-		},
-		tags: ["MicroEconomics", "ECO201", "UNN"],
+	useEffect(() => {
+		if (!id) return;
+		const fetchMaterial = async () => {
+			setLoading(true);
+			try {
+				const res = await fetch(`/api/market-materials?id=${id}`);
+				if (!res.ok) {
+					if (res.status === 404) throw new Error("Material not found.");
+					throw new Error("Could not load material details.");
+				}
+				const data = await res.json();
+				setMaterial(data);
+			} catch (err) {
+				console.error("Detail fetch failed:", err);
+				setError(err.message);
+			} finally {
+				setLoading(false);
+			}
+		};
+		fetchMaterial();
+	}, [id]);
+
+	// Helper to shorten wallet addresses
+	const shortenAddress = (address) => {
+		if (!address) return "Anonymous";
+		return `${address.slice(0, 6)}...${address.slice(-4)}`;
 	};
 
-	const relatedMaterials = [
-		"/images/image1.jpg",
-		"/images/image3.jpg",
-		"/images/image4.jpg",
-		"/images/image5.jpg",
-	];
+	// Helper: format date like “Nov 02, 2025”
+	const formatDate = (timestamp) => {
+		if (!timestamp) return "Unknown Date";
+		const date = new Date(timestamp);
+		return date.toLocaleDateString("en-US", {
+			year: "numeric",
+			month: "long",
+			day: "numeric",
+		});
+	};
+
+	if (loading) {
+		return (
+			<>
+				<Navbar />
+				<div className="min-h-screen flex flex-col items-center justify-center bg-[#fffaf6]">
+					<div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4"></div>
+					<p className="text-gray-600">Loading material details...</p>
+				</div>
+			</>
+		);
+	}
+
+	if (error || !material) {
+		return (
+			<>
+				<Navbar />
+				<div className="min-h-screen flex flex-col items-center justify-center bg-[#fffaf6] px-6 text-center">
+					<FaExclamationCircle className="text-5xl text-red-500 mb-4" />
+					<h1 className="text-2xl font-bold text-gray-900 mb-2">Material Not Found</h1>
+					<p className="text-gray-600 mb-6 max-w-md">
+						{error || "The material you are looking for does not exist or has been removed."}
+					</p>
+					<Link href="/marketplace" className="bg-blue-600 text-white px-6 py-2 rounded-md font-semibold hover:bg-blue-700 transition">
+						Back to Marketplace
+					</Link>
+				</div>
+			</>
+		);
+	}
 
 	return (
 		<>
@@ -60,20 +113,25 @@ export default function MaterialDetailsPage() {
 						<Link href="/marketplace" className="text-blue-600 hover:underline">
 							Marketplace
 						</Link>{" "}
-						→ ECO 201
+						→ {material.title.slice(0, 20)}...
 					</p>
 
 					{/* Top Section */}
 					<div className="flex flex-col md:flex-row gap-10">
 						{/* Image Preview */}
-						<div className="flex-1 bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-200">
-							<Image
-								src={material.image}
-								alt={material.title}
-								width={800}
-								height={600}
-								className="w-full h-[380px] object-cover"
-							/>
+						<div className="flex-1 bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-200 aspect-video relative">
+							{material.thumbnailUrl ? (
+								<Image
+									src={material.thumbnailUrl}
+									alt={material.title}
+									fill
+									className="object-cover"
+								/>
+							) : (
+								<div className="w-full h-full flex items-center justify-center text-gray-400">
+									No Preview Available
+								</div>
+							)}
 						</div>
 
 						{/* Info Section */}
@@ -82,7 +140,7 @@ export default function MaterialDetailsPage() {
 								{material.title}
 							</h1>
 							<p className="text-gray-600 text-sm leading-relaxed">
-								{material.description}
+								{material.description || "No description provided for this material."}
 							</p>
 
 							{/* Price & Rating */}
@@ -96,12 +154,12 @@ export default function MaterialDetailsPage() {
 										className="rounded-full"
 									/>
 									<span className="text-lg font-semibold text-gray-900">
-										{material.price}
+										{material.price > 0 ? `${material.price} CELO` : "Free"}
 									</span>
 								</div>
-								<span className="text-sm text-yellow-500">⭐ 4.8</span>
+								<span className="text-sm text-yellow-500">⭐ 0.0</span>
 								<span className="text-gray-400 text-sm">
-									({material.reviews})
+									(0 Reviews)
 								</span>
 							</div>
 
@@ -121,7 +179,7 @@ export default function MaterialDetailsPage() {
 							{/* Likes */}
 							<div className="flex items-center gap-2 text-sm text-gray-500 mt-3">
 								<FaHeart className="text-pink-500" />
-								{material.likes} Likes
+								0 Likes
 							</div>
 						</div>
 					</div>
@@ -131,97 +189,48 @@ export default function MaterialDetailsPage() {
 						{/* About */}
 						<div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
 							<h2 className="text-lg font-semibold text-gray-900 mb-3">
-								About
+								Material Overview
 							</h2>
-							<p className="text-sm text-gray-600 mb-4 leading-relaxed">
-								{material.description}
-							</p>
-							<div className="flex flex-wrap gap-2 mt-2">
-								{material.tags.map((tag, i) => (
-									<span
-										key={i}
-										className="text-xs bg-gray-100 text-gray-700 px-3 py-1 rounded-full"
-									>
-										#{tag}
-									</span>
-								))}
+							<div className="text-sm text-gray-600 space-y-4">
+								<p className="leading-relaxed">
+									{material.description || "No additional information provided."}
+								</p>
+								{material.usageRights && (
+									<div>
+										<strong className="text-gray-800">Usage Rights:</strong>
+										<p className="mt-1">{material.usageRights}</p>
+									</div>
+								)}
 							</div>
 						</div>
 
 						{/* Author Info */}
 						<div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
 							<h2 className="text-lg font-semibold text-gray-900 mb-3">
-								Author Info
+								Creator Info
 							</h2>
-							<div className="text-sm text-gray-600 space-y-2">
+							<div className="text-sm text-gray-600 space-y-3">
 								<p>
-									<strong className="text-gray-800">Author:</strong>{" "}
-									{material.author.name}
+									<strong className="text-gray-800">Creator Address:</strong>{" "}
+									<span className="break-all">{material.userAddress || "Anonymous"}</span>
 								</p>
 								<p>
-									<strong className="text-gray-800">Institution:</strong>{" "}
-									{material.author.institution}
+									<strong className="text-gray-800">Uploaded On:</strong>{" "}
+									{formatDate(material.createdAt)}
 								</p>
 								<p>
-									<strong className="text-gray-800">Department:</strong>{" "}
-									{material.author.department}
+									<strong className="text-gray-800">Visibility:</strong>{" "}
+									<span className="capitalize">{material.visibility}</span>
 								</p>
-								<p>
-									<strong className="text-gray-800">Level:</strong>{" "}
-									{material.author.level}
-								</p>
-								<p>
-									<strong className="text-gray-800">Uploaded:</strong>{" "}
-									{material.author.date}
-								</p>
-								<p className="flex items-center gap-2">
-									<strong className="text-gray-800">Verification:</strong>
-									{material.author.verified ? (
-										<span className="text-green-600 flex items-center gap-1 text-xs font-medium">
-											<FaCheckCircle /> Minted on Celo
+								<div className="pt-2">
+									<p className="flex items-center gap-2">
+										<strong className="text-gray-800">Status:</strong>
+										<span className="text-green-600 flex items-center gap-1 text-xs font-medium bg-green-50 px-2 py-1 rounded-full">
+											<FaCheckCircle /> Verified Canonical Record
 										</span>
-									) : (
-										<span className="text-red-500 text-xs font-medium">
-											Not Verified
-										</span>
-									)}
-								</p>
-							</div>
-						</div>
-					</div>
-
-					{/* Related Notes */}
-					<div className="mt-14">
-						<h2 className="text-lg font-semibold text-gray-900 mb-4">
-							Discover more Notes
-						</h2>
-
-						<div className="grid sm:grid-cols-2 md:grid-cols-4 gap-6">
-							{relatedMaterials.map((src, i) => (
-								<div
-									key={i}
-									className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition overflow-hidden"
-								>
-									<div className="relative w-full h-40">
-										<Image
-											src={src}
-											alt="Related note"
-											fill
-											className="object-cover"
-										/>
-									</div>
-									<div className="p-4">
-										<h3 className="text-sm font-semibold text-gray-900 line-clamp-1">
-											CHM 112 – Lab Report Template (UNN)
-										</h3>
-										<p className="text-xs text-gray-500 mb-2">by Chijioke M.</p>
-										<div className="flex justify-between items-center text-xs text-gray-500">
-											<span>0.25 CELO</span>
-											<span>21.5K Likes</span>
-										</div>
-									</div>
+									</p>
 								</div>
-							))}
+							</div>
 						</div>
 					</div>
 				</motion.div>
@@ -231,8 +240,9 @@ export default function MaterialDetailsPage() {
 			<BuyNowModal
 				isOpen={showBuyModal}
 				onClose={() => setShowBuyModal(false)}
-				price={material.price}
+				price={material.price > 0 ? `${material.price} CELO` : "Free"}
 			/>
 		</>
 	);
 }
+
