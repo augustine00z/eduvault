@@ -25,6 +25,9 @@
     "indexer:stellar": "node scripts/run-stellar-indexer.mjs"
   },
   "dependencies": {
+    "@creit-tech/stellar-wallets-kit": "npm:@jsr/creit-tech__stellar-wallets-kit@^2.1.0",
+    "@react-native-async-storage/async-storage": "^2.2.0",
+    "@stellar/stellar-sdk": "^13.3.0",
     "@openzeppelin/contracts": "^5.6.1",
     "@rainbow-me/rainbowkit": "^2.2.10",
     "@tanstack/react-query": "^5.99.2",
@@ -39,18 +42,23 @@
     "pinata": "^2.5.5",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
-    "react-icons": "^5.6.0",
-    "viem": "^2.48.2",
-    "wagmi": "^2.19.5"
+    "react-icons": "^5.6.0"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-ethers": "^3.1.2",
     "@tailwindcss/postcss": "^4.2.3",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@vitejs/plugin-react-swc": "^4.3.0",
     "babel-plugin-react-compiler": "1.0.0",
     "eslint": "^9.39.4",
     "eslint-config-next": "^16.2.4",
+    "jest-axe": "^10.0.0",
+    "jsdom": "^29.0.2",
     "ethers": "^6.15.0",
     "hardhat": "^2.26.3",
-    "tailwindcss": "^4.2.3"
+    "tailwindcss": "^4.2.3",
+    "vitest": "^4.1.5"
   }
 }
