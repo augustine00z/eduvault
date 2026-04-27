@@ -12,6 +12,35 @@ export default function TopSharedMaterials() {
     { title: "CSC 301 - Data Structures (Year 3)", price: "0.26 XLM", author: "Engr. Alex" },
   ];
 
+  const topAuthors = [
+    { rank: 1, name: "CryptoFunks", earnings: "0.25 XLM", change: "+26.52%", color: "text-green-500" },
+    { rank: 2, name: "Cryptix", earnings: "0.25 XLM", change: "+10.52%", color: "text-red-500" },
+    { rank: 3, name: "Frenesware", earnings: "0.25 XLM", change: "+5.52%", color: "text-green-500" },
+    { rank: 4, name: "PunkArt", earnings: "50,008 XLM", change: "+1.52%", color: "text-green-500" },
+    { rank: 5, name: "Art Crypto", earnings: "4,524 XLM", change: "+2.52%", color: "text-red-500" },
+  ];
+
+  const fadeUp = {
+    hidden: { opacity: 0, y: 40 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+  };
+
+  return (
+    <section className="relative py-24 px-6 md:px-16 overflow-hidden bg-white">
+      <motion.div
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true }}
+        variants={fadeUp}
+        className="relative flex flex-col md:flex-row md:items-end justify-between mb-16 z-10"
+      >
+        <div className="max-w-2xl">
+          <h2 className="text-4xl md:text-5xl font-bold text-stellar-dark mb-4">
+            Top Shared Materials
+          </h2>
+          <p className="text-edu-muted text-lg">
+            Discover what is trending in the EduVault community this week.
+          </p>
         </div>
         <Link 
           href="/marketplace"
@@ -140,4 +169,3 @@ export default function TopSharedMaterials() {
     </section>
   );
 }
-
