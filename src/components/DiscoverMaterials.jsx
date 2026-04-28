@@ -16,15 +16,15 @@ export default function DiscoverMaterials() {
 	const [activeCategory, setActiveCategory] = useState("All");
 
 	const materials = useMemo(
-		() =>
-			Array.from({ length: 9 }, (_, index) => ({
-				title: index % 2 === 0 ? "CHM 112 - Lab Report Template" : "GNS 201 - Advanced Grammar Notes",
-				author: index % 3 === 0 ? "Chijioke M." : "Sarah O.",
-				likes: Math.floor(Math.random() * 500) + 100,
-				price: "0.25 XLM",
-				category: index % 3 === 0 ? "Science" : "Arts",
-				image: imageOptions[index % imageOptions.length],
-			})),
+			() =>
+				Array.from({ length: 9 }, (_, index) => ({
+					title: index % 2 === 0 ? "CHM 112 - Lab Report Template" : "GNS 201 - Advanced Grammar Notes",
+					author: index % 3 === 0 ? "Chijioke M." : "Sarah O.",
+					likes: ((index * 97) % 500) + 100,
+					price: "0.25 XLM",
+					category: index % 3 === 0 ? "Science" : "Arts",
+					image: imageOptions[index % imageOptions.length],
+				})),
 		[]
 	);
 

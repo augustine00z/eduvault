@@ -61,8 +61,9 @@ export default function MarketPage() {
 	];
 
 	useEffect(() => {
+		// eslint-disable-next-line react-hooks/set-state-in-effect
 		setIsLoading(true);
-		
+
 		// Simulate network delay
 		const timer = setTimeout(() => {
 			let filtered = allMaterials;
@@ -113,6 +114,7 @@ export default function MarketPage() {
 	const displayedMaterials = materials.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
 	useEffect(() => {
+		// eslint-disable-next-line react-hooks/set-state-in-effect
 		setCurrentPage(1); // Reset page on filter change
 	}, [searchQuery, activeCategory, sortBy, priceFilter]);
 
@@ -269,8 +271,8 @@ export default function MarketPage() {
 								<FaSearch className="text-gray-400 text-2xl" />
 							</div>
 							<h3 className="text-lg font-bold text-gray-900 mb-2">No materials found</h3>
-							<p className="text-gray-500 text-sm max-w-md mx-auto mb-6">
-								We couldn't find any materials matching your current filters and search query. Try adjusting them.
+								<p className="text-gray-500 text-sm max-w-md mx-auto mb-6">
+								We could not find any materials matching your current filters and search query. Try adjusting them.
 							</p>
 							<button 
 								onClick={() => {

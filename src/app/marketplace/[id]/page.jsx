@@ -14,7 +14,7 @@ import { QueryStateProvider } from "@/components/common/QueryStateProvider";
 
 export default function MaterialDetailsPage() {
 	const params = useParams();
-	const id = params.id as string;
+	const id = params.id;
 	const [showBuyModal, setShowBuyModal] = useState(false);
 	const materialQuery = useMaterialDetail(id);
 	const entitlementQuery = useEntitlement(id);
@@ -134,7 +134,7 @@ export default function MaterialDetailsPage() {
 										{material.description}
 									</p>
 									<div className="flex flex-wrap gap-2 mt-2">
-										{material.tags?.map((tag: string, i: number) => (
+										{material.tags?.map((tag, i) => (
 											<span
 												key={i}
 												className="text-xs bg-gray-100 text-gray-700 px-3 py-1 rounded-full"
